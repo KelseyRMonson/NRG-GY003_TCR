@@ -55,6 +55,7 @@ I have used MiXCR to define CDR3 sequences from Cellecta sequencing of bulk tumo
 
 # Package for immune repertoire analysis 
 library(immunarch)
+library(ggalluvial)
 
 ## Load the other packages up here
 ```
@@ -92,4 +93,27 @@ repClonality(immdata.nivoCB$data, "homeo") %>%  vis(.by="Tissue_Type",.meta=immd
 repClonality(immdata.nivoCB$data, "homeo") %>%  vis(.by="Tissue_Timepoint",.meta=immdata.nivoCB$meta) # Visualise the relative abundance of clonotypes by tissue and timepiont
 
 #Provides a bit more evidence of treatment-induced clonal expansion, but not statistically different
+
+repOverlap(immdata.nivoCB$data) %>% vis() # Build the heatmap of public clonotypes shared between repertoires
+
+```
+
+```{r}
+## Tumor AA clones vs PBMCs
+tc1_tu <- trackClonotypes(immdata.nivoCB$data, list(4, 10), .col = "aa") # GADCHA*
+tc2_tu <- trackClonotypes(immdata.nivoCB$data, list(8, 10), .col = "aa") # GADCHV*
+tc3_tu <- trackClonotypes(immdata.nivoCB$data, list(12, 10), .col = "aa") # GADCJG*
+tc4_tu <- trackClonotypes(immdata.nivoCB$data, list(18, 10), .col = "aa") # GADCMD*
+tc5_tu <- trackClonotypes(immdata.nivoCB$data, list(22, 10), .col = "aa") # GADGCX t1*
+tc6_tu <- trackClonotypes(immdata.nivoCB$data, list(23, 10), .col = "aa") # GADGCX t2* 
+tc7_tu <- trackClonotypes(immdata.nivoCB$data, list(27, 10), .col = "aa") # GADGIZ*
+
+vis(tc1_tu)
+vis(tc2_tu)
+vis(tc3_tu)
+vis(tc4_tu)
+vis(tc5_tu)
+vis(tc6_tu)
+vis(tc7_tu)
+
 ```
