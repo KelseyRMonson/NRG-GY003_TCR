@@ -1,11 +1,95 @@
 ---
-title: "NRG-GY003_TCR"
+title: "NRG-GY003 TCR Analysis"
+subtitle: "TCR analysis of NRG-GY003 ovarian cancer tumors and peripheral blood"
+description: "Analysis of bulk TCR-seq (DNA) from archival tissue samples and pre- and post-treatment peripheral blood samples from patients with recurrent ovarian cancer treated with immune checkpoint inhibitors (NIVO or IPI/NIVO) treated on the NRG-GY003 clinical trial."
+
+author:
+  - name: Kelsey Monson
+    degrees:
+      - PhD
+      - MS
+    orcid: 0000-0003-1093-8628
+    email: kelsey.monson@mssm.edu
+    affiliations:
+      - ref: ISMMS
+
+affiliations:
+  - id: ISMMS
+    name: Icahn School of Medicine at Mount Sinai
+    city: New York
+    state: NY
+    department: Immunology and Immunotherapy
+
+title-block-banner: "#f0f3f5"
+title-block-banner-color: "black"
+
+keywords: "Genomics, TCR, Immunotherapy, R, Ovarian Cancer"
+date: today
+
+format: 
+  html: 
+    toc: true
+    code-overflow: wrap
+    embed-resources: true
+    
+fig-cap-location: margin
+execute:
+ warning: false
+editor: visual
 ---
 
-## Quarto
+# Introduction
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+I have used MiXCR to define CDR3 sequences from Cellecta sequencing of bulk tumor and blood TCRs from the NRG-GY003 clinical trial.
+
+*Add demographic table here of samples with TCR-seq*
+
+## Cellecta and MiXCR
+
+*Add more details on the sequencing and MiXCR here*
+
+# Immunarch Analysis
 
 ```{r}
-1 + 1
+#| code-fold: true
+
+# Package for immune repertoire analysis 
+library(immunarch)
+
+## Load the other packages up here
+```
+
+The `immunarch` plots are not well-designed for the number of samples we have, so I've broken up the analysis by treatment (Nivo and Combo) and response (Clinical Benefit and No Clinical Benefit)
+
+## TRB
+
+I started by first analyzing the TRB data (based in part on [this](https://www.nature.com/articles/s41591-019-0734-6) study that showed the strongest signal with TRB chains).
+
+**Nivo Clinical Benefit**
+
+```{r}
+# Load the data
+immdata.nivoCB <- repLoad("input/TRB/Nivo_CB/")
+
+
+# Calculate and visualise basic statistics ----
+repExplore(immdata.nivoCB$data, "volume") %>% vis() # Number of unique clonotypes
+repExplore(immdata.nivoCB$data, "volume") %>% vis(.by="Tissue_Type",.meta=immdata.nivoCB$meta) # Number of unique clonotypes by tissue type (normal/tumor)
+# Unsurprisingly, the tumor samples have far fewer unique clones than the blood
+
+repExplore(immdata.nivoCB$data, "volume") %>% vis(.by="Tissue_Timepoint",.meta=immdata.nivoCB$meta)
+# Slight trend towards fewere unique clones at later treatment timepoints, potentially indicative of ICI-induced clonal expansion, but no statistical difference
+
+
+repExplore(immdata.nivoCB$data, "clones") %>% vis() # Number of clones (i.e., cells) per input repertoire
+repExplore(immdata.nivoCB$data, "clones") %>% vis(.by="Tissue_Type",.meta=immdata.nivoCB$meta) # Number of clones per input repertoire by tissue type
+
+# So the absolute number of clones (or T cells) in tumor is much higher, but the repertoire diversity is lower
+
+
+repClonality(immdata.nivoCB$data, "homeo") %>%  vis() # Visualise the relative abundance of clonotypes
+repClonality(immdata.nivoCB$data, "homeo") %>%  vis(.by="Tissue_Type",.meta=immdata.nivoCB$meta) # Visualise the relative abundance of clonotypes by tissue type
+repClonality(immdata.nivoCB$data, "homeo") %>%  vis(.by="Tissue_Timepoint",.meta=immdata.nivoCB$meta) # Visualise the relative abundance of clonotypes by tissue and timepiont
+
+#Provides a bit more evidence of treatment-induced clonal expansion, but not statistically different
 ```
